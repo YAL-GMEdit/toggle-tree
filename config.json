@@ -1,0 +1,4 @@
+{
+	"name": "toggle-tree",
+	"scripts": ["toggle-tree.js"]
+}
