@@ -1,0 +1,17 @@
+.system-buttons.hamburger.hamburger-hidden {
+    left: 0;
+    display: flex;
+}
+
+#button-slot {
+    float: left;
+    width: 30px;
+    height: 100%;
+    margin: 0%;
+}
+
+/* Adjust to account for button slot */
+.chrome-tabs-content.chrome-tabs-content-reduced {
+    float: left;
+    width: 95%;
+}
