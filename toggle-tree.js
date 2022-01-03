@@ -15,39 +15,51 @@
 	}
 
 	function updateHamburgerLocation() {
+		var currTRV = FileWrap.readConfigSync("config", Preferences.path).toggleResourceView;
 		var tree = document.querySelector("#tree-td");
 		var hamburger = document.querySelector(".hamburger");
 		var buttonSapce = document.querySelector("#button-slot");
 		// Free up white space for tabs
-		buttonSapce.style.display = tree.style.display == "none" ? "" : "none";
-
-		// Move the hamburger based on toggle state
-		if (tree.style.display == "") {
-			// Resource tree is shown, move hamburger next to project name
+		
+		// Check preferences to see if hamberger is to be moved
+		if (currTRV.moveHamburger) {
+			buttonSapce.style.display = tree.style.display == "none" ? "" : "none";
+			// Move the hamburger based on toggle state
+			if (tree.style.display == "") {
+				// Resource tree is shown, move hamburger next to project name
+				var projectName = document.querySelector(".project-name");
+				projectName.appendChild(hamburger);
+				// Re-query button, otherwise button will be duplicated
+				document.querySelector(".hamburger").classList.remove("hamburger-hidden");
+				document.querySelector(".chrome-tabs-content").classList.remove("chrome-tabs-content-reduced");
+			} else {
+				// Resource tree is hidden, move hamburger next to tabs
+				buttonSapce.appendChild(hamburger);
+				// Re-query button, otherwise button will be duplicated
+				document.querySelector(".hamburger").classList.add("hamburger-hidden");
+				document.querySelector(".chrome-tabs-content").classList.add("chrome-tabs-content-reduced");
+			}
+		} else {
+			buttonSapce.style.display = "none";
+			// if hamberger isn't supposed to be moved, force into original position
 			var projectName = document.querySelector(".project-name");
 			projectName.appendChild(hamburger);
 			// Re-query button, otherwise button will be duplicated
 			document.querySelector(".hamburger").classList.remove("hamburger-hidden");
 			document.querySelector(".chrome-tabs-content").classList.remove("chrome-tabs-content-reduced");
-		} else {
-			// Resource tree is hidden, move hamburger next to tabs
-			buttonSapce.appendChild(hamburger);
-			// Re-query button, otherwise button will be duplicated
-			document.querySelector(".hamburger").classList.add("hamburger-hidden");
-			document.querySelector(".chrome-tabs-content").classList.add("chrome-tabs-content-reduced");
 		}
 	}
 
 	function init() {
 		// Initialize new elements
 		document.querySelector(".system-buttons").classList.add("hamburger");
-		// TODO: save hidden state of resource tree in properties
 		var buttonSlot = document.createElement("div")
 		// Default button slot to hidden since resource tree is shown by default
 		buttonSlot.style.display = "none";
 		buttonSlot.id = "button-slot"
 		document.querySelector("#tabs").prepend(buttonSlot);
 
+		// Prepare toggled resource tree preferences
 		function prepareTRT() {
 			var currentPrefs = Preferences.current.toggleResourceView;
 			if (!currentPrefs) currentPrefs = Preferences.current.toggleResourceView = {};
@@ -88,8 +100,8 @@
 			Preferences.addCheckbox(out, "Show hamburger when resource tree is closed", opt(currTRT, "moveHamburger", true), function (val) {
 				var currTRT = prepareTRT();
 				showFuncArgs = currTRT.moveHamburger = val;
-				updateHamburgerLocation();
 				Preferences.save();
+				updateHamburgerLocation();
 				forceRefresh();
 			});
 		});
